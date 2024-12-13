@@ -3,8 +3,10 @@ import { zValidator } from "@hono/zod-validator";
 import { ID } from "node-appwrite";
 import { deleteCookie, setCookie } from "hono/cookie";
 
-import { loginSchema, registerSchema } from "../schemas";
 import { createAdminClient } from "@/lib/appwrite";
+import { sessionMiddleware } from "@/lib/session-middleware";
+
+import { loginSchema, registerSchema } from "../schemas";
 import { AUTH_COOKIE } from "../constants";
 
 const app = new Hono()
@@ -44,7 +46,7 @@ const app = new Hono()
 
     return c.json({ success: true });
   })
-  .post("/logout", (c) => {
+  .post("/logout", sessionMiddleware, (c) => {
     deleteCookie(c, AUTH_COOKIE);
     return c.json({ success: true });
   });
